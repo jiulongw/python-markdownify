@@ -285,6 +285,28 @@ class MarkdownConverter(object):
     def convert_hr(self, el, text, convert_as_inline):
         return '\n\n---\n\n'
 
+    def convert_figure(self, el, text, convert_as_inline):
+        caption_node = el.find('figcaption')
+        caption = caption_node.text if caption_node else ''
+
+        img = el.find('img')
+        if img:
+            if not caption:
+                caption = img.attrs.get('alt', '')
+
+            if convert_as_inline:
+                return caption
+
+            src = img.attrs.get('src', '')
+            return '![%s](%s)\n\n' % (caption, src)
+
+        iframe = el.find('iframe')
+        if iframe:
+            src = iframe.attrs.get('src')
+            return '<!-- %s -->\n\n' % src
+
+        return ''
+
 
 def markdownify(html, **options):
     return MarkdownConverter(**options).convert(html)
