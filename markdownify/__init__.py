@@ -316,6 +316,11 @@ class MarkdownConverter(object):
             src = iframe.attrs.get('src')
             return '<!-- %s -->\n\n' % src
 
+        video = el.find('video')
+        if video:
+            src = video.attrs.get('src')
+            return '<!-- upload-video: %s -->\n\n' % src
+
         return ''
 
 
