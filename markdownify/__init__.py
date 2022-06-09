@@ -319,7 +319,7 @@ class MarkdownConverter(object):
         video = el.find('video')
         if video:
             src = video.attrs.get('src')
-            return '<!-- upload-video: %s -->\n\n' % src
+            return '<!-- upload-video: %s [%s] -->\n\n' % (src, caption)
 
         return ''
 
