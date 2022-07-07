@@ -323,6 +323,9 @@ class MarkdownConverter(object):
 
         return ''
 
+    def convert_pre(self, el, text, convert_as_inline):
+        return '%s\n\n' % text
+
 
 def markdownify(html, **options):
     return MarkdownConverter(**options).convert(html)

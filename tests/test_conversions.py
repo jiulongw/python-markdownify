@@ -336,3 +336,7 @@ def test_strong_em_symbol():
 
 def test_newline_style():
     assert md('a<br />b<br />c', newline_style=BACKSLASH) == 'a\\\nb\\\nc'
+
+
+def test_pre_style():
+    assert md('<pre>hello</pre><h2>title</h2>', heading_style=ATX) == 'hello\n\n## title\n\n'
