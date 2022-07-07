@@ -187,6 +187,8 @@ def test_p():
 def test_pre():
     assert md('<pre>test\n    foo\nbar</pre>') == '\n```\ntest\n    foo\nbar\n```\n'
     assert md('<pre><code>test\n    foo\nbar</code></pre>') == '\n```\ntest\n    foo\nbar\n```\n'
+    assert md('<pre class="wp-block-preformatted">hello</pre><h2>title</h2>', heading_style=ATX) == 'hello\n\n## title\n\n'
+    assert md('<pre class="wp-block-preformatted">hello_world</pre>') == 'hello_world\n\n'
 
 
 def test_s():
@@ -233,6 +235,3 @@ def test_lang_callback():
 
 def test_newline_style():
     assert md('a<br />b<br />c', newline_style=BACKSLASH) == 'a\\\nb\\\nc'
-
-def test_pre_style():
-    assert md('<pre class="wp-block-preformatted">hello</pre><h2>title</h2>', heading_style=ATX) == 'hello\n\n## title\n\n'
