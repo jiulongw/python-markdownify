@@ -10,7 +10,7 @@ read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 pkgmeta = {
     '__title__': 'markdownify',
     '__author__': 'Matthew Tretter',
-    '__version__': '0.7.2',
+    '__version__': '0.11.2',
 }
 
 
@@ -70,7 +70,7 @@ setup(
     zip_safe=False,
     include_package_data=True,
     setup_requires=[
-        'flake8>=3.8,<4',
+        'flake8>=3.8,<5',
     ],
     tests_require=[
         'pytest>=6.2,<7',

@@ -32,14 +32,14 @@ Convert some HTML to Markdown:
     from markdownify import markdownify as md
     md('<b>Yay</b> <a href="http://github.com">GitHub</a>')  # > '**Yay** [GitHub](http://github.com)'
 
-Specify tags to exclude (blacklist):
+Specify tags to exclude:
 
 .. code:: python
 
     from markdownify import markdownify as md
     md('<b>Yay</b> <a href="http://github.com">GitHub</a>', strip=['a'])  # > '**Yay** GitHub'
 
-\...or specify the tags you want to include (whitelist):
+\...or specify the tags you want to include:
 
 .. code:: python
 
@@ -53,16 +53,20 @@ Options
 Markdownify supports the following options:
 
 strip
-  A list of tags to strip (blacklist). This option can't be used with the
+  A list of tags to strip. This option can't be used with the
   ``convert`` option.
 
 convert
-  A list of tags to convert (whitelist). This option can't be used with the
+  A list of tags to convert. This option can't be used with the
   ``strip`` option.
 
 autolinks
   A boolean indicating whether the "automatic link" style should be used when
-  a ``a`` tag's contents match its href. Defaults to ``True``
+  a ``a`` tag's contents match its href. Defaults to ``True``.
+
+default_title
+  A boolean to enable setting the title of a link to its href, if no title is
+  given. Defaults to ``False``.
 
 heading_style
   Defines how headings should be converted. Accepted values are ``ATX``,
@@ -80,15 +84,94 @@ strong_em_symbol
   *emphasized* texts. Either of these symbols can be chosen by the options
   ``ASTERISK`` (default) or ``UNDERSCORE`` respectively.
 
+sub_symbol, sup_symbol
+  Define the chars that surround ``<sub>`` and ``<sup>`` text. Defaults to an
+  empty string, because this is non-standard behavior. Could be something like
+  ``~`` and ``^`` to result in ``~sub~`` and ``^sup^``.
+
 newline_style
   Defines the style of marking linebreaks (``<br>``) in markdown. The default
   value ``SPACES`` of this option will adopt the usual two spaces and a newline,
-  while ``BACKSLASH`` will convert a linebreak to ``\\n`` (a backslash an a
+  while ``BACKSLASH`` will convert a linebreak to ``\\n`` (a backslash and a
   newline). While the latter convention is non-standard, it is commonly
   preferred and supported by a lot of interpreters.
 
+code_language
+  Defines the language that should be assumed for all ``<pre>`` sections.
+  Useful, if all code on a page is in the same programming language and
+  should be annotated with `````python`` or similar.
+  Defaults to ``''`` (empty string) and can be any string.
+
+code_language_callback
+  When the HTML code contains ``pre`` tags that in some way provide the code
+  language, for example as class, this callback can be used to extract the
+  language from the tag and prefix it to the converted ``pre`` tag.
+  The callback gets one single argument, an BeautifylSoup object, and returns
+  a string containing the code language, or ``None``.
+  An example to use the class name as code language could be::
+
+    def callback(el):
+        return el['class'][0] if el.has_attr('class') else None
+
+  Defaults to ``None``.
+
+escape_asterisks
+  If set to ``False``, do not escape ``*`` to ``\*`` in text.
+  Defaults to ``True``.
+
+escape_underscores
+  If set to ``False``, do not escape ``_`` to ``\_`` in text.
+  Defaults to ``True``.
+
+keep_inline_images_in
+  Images are converted to their alt-text when the images are located inside
+  headlines or table cells. If some inline images should be converted to
+  markdown images instead, this option can be set to a list of parent tags
+  that should be allowed to contain inline images, for example ``['td']``.
+  Defaults to an empty list.
+
+wrap, wrap_width
+  If ``wrap`` is set to ``True``, all text paragraphs are wrapped at
+  ``wrap_width`` characters. Defaults to ``False`` and ``80``.
+  Use with ``newline_style=BACKSLASH`` to keep line breaks in paragraphs.
+
 Options may be specified as kwargs to the ``markdownify`` function, or as a
 nested ``Options`` class in ``MarkdownConverter`` subclasses.
+
+
+Converting BeautifulSoup objects
+================================
+
+.. code:: python
+
+    from markdownify import MarkdownConverter
+
+    # Create shorthand method for conversion
+    def md(soup, **options):
+        return MarkdownConverter(**options).convert_soup(soup)
+
+
+Creating Custom Converters
+==========================
+
+If you have a special usecase that calls for a special conversion, you can
+always inherit from ``MarkdownConverter`` and override the method you want to
+change:
+
+.. code:: python
+
+    from markdownify import MarkdownConverter
+
+    class ImageBlockConverter(MarkdownConverter):
+        """
+        Create a custom MarkdownConverter that adds two newlines after an image
+        """
+        def convert_img(self, el, text, convert_as_inline):
+            return super().convert_img(el, text, convert_as_inline) + '\n\n'
+
+    # Create shorthand method for conversion
+    def md(html, **options):
+        return ImageBlockConverter(**options).convert(html)
 
 
 Development
